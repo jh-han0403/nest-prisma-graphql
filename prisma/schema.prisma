@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int        @default(autoincrement()) @id
+  email     String     @db.VarChar(64) @unique
+  name      String     @db.VarChar(32)
+  password  String     @db.VarChar(64)
+  createdAt DateTime   @default(dbgenerated("(now())")) @db.DateTime(0)
+  updatedAt DateTime   @default(dbgenerated("(now())")) @db.DateTime(0)
+  deletedAt DateTime?  @db.DateTime(0)
+
+  posts     Post[]
+  comments  Comment[]
+}
+
+model Post {
+  id        Int        @default(autoincrement()) @id
+  title     String
+  content   String?
+  createdAt DateTime   @default(dbgenerated("(now())")) @db.DateTime(0)
+  updatedAt DateTime   @default(dbgenerated("(now())")) @db.DateTime(0)
+  deletedAt DateTime?  @db.DateTime(0)
+  authorId  Int
+
+  author    User       @relation(fields: [authorId], references: [id])
+  comments  Comment[]
+}
+
+model Comment {
+  id        Int        @default(autoincrement()) @id
+  content   String
+  createdAt DateTime   @default(dbgenerated("(now())")) @db.DateTime(0)
+  updatedAt DateTime   @default(dbgenerated("(now())")) @db.DateTime(0)
+  deletedAt DateTime?  @db.DateTime(0)
+  authorId  Int
+  postId    Int
+
+  author    User       @relation(fields: [authorId], references: [id])
+  post      Post       @relation(fields: [postId], references: [id])
+}
