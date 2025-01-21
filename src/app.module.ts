@@ -7,6 +7,10 @@ import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { ClsModule } from 'nestjs-cls';
 import { PrismaService } from './prisma/prisma.service';
+import { UserModule } from './user/user.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -25,7 +29,12 @@ import { PrismaService } from './prisma/prisma.service';
         mount: true,
       },
     }),
-    PrismaModule,
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      sortSchema: true,
+    }),
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
